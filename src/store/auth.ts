@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { supabase } from '@/integrations/supabase/client';
 import { Empresa, Usuario, UserRole } from '@/types/business';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -11,47 +13,123 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
   currentEmpresa: Empresa | null;
-  login: (role: UserRole) => void;
-  logout: () => void;
+  loading: boolean;
+  initialize: () => void;
+  logout: () => Promise<void>;
   setEmpresa: (empresa: Empresa) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
+  session: null,
   isAuthenticated: false,
   currentEmpresa: null,
-  login: (role: UserRole) => {
-    // Mock empresa para demonstração
-    const mockEmpresa: Empresa = {
-      id: '1',
-      nome: role === 'super_admin' ? 'VitaTech Agência' : 'Empresa Demo',
-      plano: 'professional',
-      created_at: new Date().toISOString(),
-    };
+  loading: true,
 
-    const mockUser: User = {
-      id: '1',
-      email: role === 'super_admin' ? 'admin@vitatech.com' : 'cliente@empresa.com',
-      nome: role === 'super_admin' ? 'Admin VitaTech' : 'Carlos Empresário',
-      role,
-      empresa: mockEmpresa,
-    };
+  initialize: () => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
+        
+        if (session?.user) {
+          // Defer user data fetching to prevent deadlock
+          setTimeout(async () => {
+            try {
+              const { data: userData, error } = await supabase
+                .from('usuarios')
+                .select(`
+                  *,
+                  empresa:empresas(*)
+                `)
+                .eq('id', session.user.id)
+                .single();
 
-    set({ 
-      user: mockUser, 
-      isAuthenticated: true, 
-      currentEmpresa: mockEmpresa 
+              if (error) {
+                console.error('Error fetching user data:', error);
+                set({ 
+                  user: null, 
+                  session: null, 
+                  isAuthenticated: false, 
+                  loading: false 
+                });
+                return;
+              }
+
+              if (userData && userData.empresa) {
+                const empresa: Empresa = {
+                  id: userData.empresa.id,
+                  nome: userData.empresa.nome,
+                  plano: userData.empresa.plano as any,
+                  created_at: userData.empresa.created_at,
+                  configuracoes: userData.empresa.configuracoes as any,
+                };
+
+                const user: User = {
+                  id: userData.id,
+                  email: userData.email,
+                  nome: userData.nome,
+                  role: userData.role as UserRole,
+                  empresa,
+                };
+
+                set({
+                  user,
+                  session,
+                  isAuthenticated: true,
+                  currentEmpresa: empresa,
+                  loading: false,
+                });
+              }
+            } catch (error) {
+              console.error('Error in auth state change:', error);
+              set({ 
+                user: null, 
+                session: null, 
+                isAuthenticated: false, 
+                loading: false 
+              });
+            }
+          }, 0);
+        } else {
+          set({ 
+            user: null, 
+            session: null, 
+            isAuthenticated: false, 
+            currentEmpresa: null, 
+            loading: false 
+          });
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        set({ loading: false });
+      }
     });
+
+    return () => subscription.unsubscribe();
   },
-  logout: () => {
-    set({ 
-      user: null, 
-      isAuthenticated: false, 
-      currentEmpresa: null 
-    });
+
+  logout: async () => {
+    try {
+      await supabase.auth.signOut();
+      set({ 
+        user: null, 
+        session: null, 
+        isAuthenticated: false, 
+        currentEmpresa: null 
+      });
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   },
+
   setEmpresa: (empresa: Empresa) => {
     set({ currentEmpresa: empresa });
   },

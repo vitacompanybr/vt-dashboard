@@ -9,6 +9,235 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      chatbot_configs: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          personalidade: Json | null
+          prompt_sistema: string
+          updated_at: string | null
+          workflows: Json | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          personalidade?: Json | null
+          prompt_sistema: string
+          updated_at?: string | null
+          workflows?: Json | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          personalidade?: Json | null
+          prompt_sistema?: string
+          updated_at?: string | null
+          workflows?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chatbot_configs_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comentarios: {
+        Row: {
+          autor: string | null
+          conteudo_id: string | null
+          created_at: string | null
+          id: string
+          resolvido: boolean | null
+          texto: string
+          tipo: string
+        }
+        Insert: {
+          autor?: string | null
+          conteudo_id?: string | null
+          created_at?: string | null
+          id?: string
+          resolvido?: boolean | null
+          texto: string
+          tipo?: string
+        }
+        Update: {
+          autor?: string | null
+          conteudo_id?: string | null
+          created_at?: string | null
+          id?: string
+          resolvido?: boolean | null
+          texto?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comentarios_autor_fkey"
+            columns: ["autor"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comentarios_conteudo_id_fkey"
+            columns: ["conteudo_id"]
+            isOneToOne: false
+            referencedRelation: "conteudos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conteudos: {
+        Row: {
+          agendamento: string | null
+          arquivos: string[] | null
+          created_at: string | null
+          criado_por: string | null
+          descricao: string | null
+          empresa_id: string | null
+          id: string
+          plataformas: string[] | null
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string | null
+        }
+        Insert: {
+          agendamento?: string | null
+          arquivos?: string[] | null
+          created_at?: string | null
+          criado_por?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          plataformas?: string[] | null
+          status?: string
+          tipo: string
+          titulo: string
+          updated_at?: string | null
+        }
+        Update: {
+          agendamento?: string | null
+          arquivos?: string[] | null
+          created_at?: string | null
+          criado_por?: string | null
+          descricao?: string | null
+          empresa_id?: string | null
+          id?: string
+          plataformas?: string[] | null
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conteudos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conteudos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      empresas: {
+        Row: {
+          configuracoes: Json | null
+          created_at: string | null
+          id: string
+          nome: string
+          plano: string
+          updated_at: string | null
+        }
+        Insert: {
+          configuracoes?: Json | null
+          created_at?: string | null
+          id?: string
+          nome: string
+          plano?: string
+          updated_at?: string | null
+        }
+        Update: {
+          configuracoes?: Json | null
+          created_at?: string | null
+          id?: string
+          nome?: string
+          plano?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          canal: string
+          created_at: string | null
+          email: string | null
+          empresa_id: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          score: number | null
+          status: string
+          telefone: string
+          ultima_interacao: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          canal: string
+          created_at?: string | null
+          email?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          score?: number | null
+          status?: string
+          telefone: string
+          ultima_interacao?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          canal?: string
+          created_at?: string | null
+          email?: string | null
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          score?: number | null
+          status?: string
+          telefone?: string
+          ultima_interacao?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       n8n_chat_histories: {
         Row: {
           id: number
@@ -26,6 +255,44 @@ export type Database = {
           session_id?: string
         }
         Relationships: []
+      }
+      usuarios: {
+        Row: {
+          created_at: string | null
+          email: string
+          empresa_id: string | null
+          id: string
+          nome: string
+          role: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          empresa_id?: string | null
+          id?: string
+          nome: string
+          role?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          empresa_id?: string | null
+          id?: string
+          nome?: string
+          role?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usuarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
