@@ -188,12 +188,12 @@ export default function Auth() {
                 <div className="bg-muted p-3 rounded-lg space-y-1">
                   <p className="font-medium">Admin VitaTech:</p>
                   <p>admin@vitatech.com</p>
-                  <p>Senha: demo123</p>
+                  <p>demo123</p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg space-y-1">
                   <p className="font-medium">Cliente Demo:</p>
-                  <p>Email: carlos@empresa.com</p>
-                  <p>Senha: demo123</p>
+                  <p>carlos@empresa.com</p>
+                  <p>demo123</p>
                 </div>
               </div>
               <p className="text-xs text-center text-muted-foreground">
