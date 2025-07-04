@@ -8,40 +8,40 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthStore } from '@/store/auth';
 import { LogIn, UserPlus, Loader2 } from 'lucide-react';
-
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { isAuthenticated } = useAuthStore();
-
+  const {
+    toast
+  } = useToast();
+  const {
+    isAuthenticated
+  } = useAuthStore();
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
     }
   }, [isAuthenticated, navigate]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const {
+          error
+        } = await supabase.auth.signInWithPassword({
           email,
-          password,
+          password
         });
-        
         if (error) throw error;
-        
         toast({
           title: 'Login realizado com sucesso!',
-          description: 'Redirecionando...',
+          description: 'Redirecionando...'
         });
-        
+
         // Force redirect after successful login
         setTimeout(() => {
           navigate('/');
@@ -49,39 +49,37 @@ export default function Auth() {
       } else {
         // Check if it's a demo user
         const isDemoUser = email === 'admin@vitatech.com' || email === 'carlos@empresa.com';
-        
         if (isDemoUser && password === 'demo123') {
           const created = await createDemoUserIfNeeded(email, password);
           if (created) {
             toast({
               title: 'Conta demo criada!',
-              description: 'Agora você pode fazer login.',
+              description: 'Agora você pode fazer login.'
             });
             setIsLogin(true);
             return;
           }
         }
-
-        const { error } = await supabase.auth.signUp({
+        const {
+          error
+        } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`
           }
         });
-        
         if (error) throw error;
-        
         toast({
           title: 'Cadastro realizado!',
-          description: 'Verifique seu email para confirmar a conta.',
+          description: 'Verifique seu email para confirmar a conta.'
         });
       }
     } catch (error: any) {
       toast({
         title: 'Erro',
         description: error.message || 'Ocorreu um erro inesperado',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -92,7 +90,9 @@ export default function Auth() {
   const createDemoUserIfNeeded = async (email: string, password: string) => {
     try {
       // Try to sign up first (will fail if user exists)
-      const { error: signUpError } = await supabase.auth.signUp({
+      const {
+        error: signUpError
+      } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -106,15 +106,13 @@ export default function Auth() {
         if (email === 'admin@vitatech.com' || email === 'carlos@empresa.com') {
           setTimeout(async () => {
             try {
-              const { data: authUser } = await supabase.auth.getUser();
+              const {
+                data: authUser
+              } = await supabase.auth.getUser();
               if (authUser.user) {
-                const empresaId = email === 'admin@vitatech.com' 
-                  ? '11111111-1111-1111-1111-111111111111'
-                  : '22222222-2222-2222-2222-222222222222';
-                
+                const empresaId = email === 'admin@vitatech.com' ? '11111111-1111-1111-1111-111111111111' : '22222222-2222-2222-2222-222222222222';
                 const role = email === 'admin@vitatech.com' ? 'super_admin' : 'client_owner';
                 const nome = email === 'admin@vitatech.com' ? 'Admin VitaTech' : 'Carlos Empresário';
-
                 await supabase.from('usuarios').upsert({
                   id: authUser.user.id,
                   email: authUser.user.email,
@@ -136,9 +134,7 @@ export default function Auth() {
       return false;
     }
   };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">VitaTech Dashboard</h1>
@@ -150,43 +146,25 @@ export default function Auth() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {isLogin ? (
-                <>
+              {isLogin ? <>
                   <LogIn className="w-5 h-5" />
                   Entrar
-                </>
-              ) : (
-                <>
+                </> : <>
                   <UserPlus className="w-5 h-5" />
                   Cadastrar
-                </>
-              )}
+                </>}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="seu@email.com"
-                />
+                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="seu@email.com" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                />
+                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
@@ -196,15 +174,8 @@ export default function Auth() {
             </form>
 
             <div className="text-center">
-              <Button
-                variant="link"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm"
-              >
-                {isLogin 
-                  ? 'Não tem conta? Cadastre-se' 
-                  : 'Já tem conta? Faça login'
-                }
+              <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="text-sm">
+                {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
               </Button>
             </div>
 
@@ -216,7 +187,7 @@ export default function Auth() {
               <div className="space-y-2 text-xs text-muted-foreground">
                 <div className="bg-muted p-3 rounded-lg space-y-1">
                   <p className="font-medium">Admin VitaTech:</p>
-                  <p>Email: admin@vitatech.com</p>
+                  <p>admin@vitatech.com</p>
                   <p>Senha: demo123</p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg space-y-1">
@@ -232,6 +203,5 @@ export default function Auth() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 }
