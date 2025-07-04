@@ -42,6 +42,21 @@ export default function Auth() {
           description: 'Redirecionando...',
         });
       } else {
+        // Check if it's a demo user
+        const isDemoUser = email === 'admin@vitatech.com' || email === 'carlos@empresa.com';
+        
+        if (isDemoUser && password === 'demo123') {
+          const created = await createDemoUserIfNeeded(email, password);
+          if (created) {
+            toast({
+              title: 'Conta demo criada!',
+              description: 'Agora você pode fazer login.',
+            });
+            setIsLogin(true);
+            return;
+          }
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -68,29 +83,52 @@ export default function Auth() {
     }
   };
 
-  // Quick login buttons for demo
-  const handleQuickLogin = async (userEmail: string) => {
-    setLoading(true);
+  // Handle demo signup for specific demo users
+  const createDemoUserIfNeeded = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: userEmail,
-        password: 'demo123',
+      // Try to sign up first (will fail if user exists)
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
-      
-      if (error) throw error;
-      
-      toast({
-        title: 'Login realizado com sucesso!',
-        description: 'Redirecionando...',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
+
+      // If signup successful or user already exists, try to create profile
+      if (!signUpError || signUpError.message.includes('already registered')) {
+        // For demo users, we need to insert into our usuarios table
+        if (email === 'admin@vitatech.com' || email === 'carlos@empresa.com') {
+          setTimeout(async () => {
+            try {
+              const { data: authUser } = await supabase.auth.getUser();
+              if (authUser.user) {
+                const empresaId = email === 'admin@vitatech.com' 
+                  ? '11111111-1111-1111-1111-111111111111'
+                  : '22222222-2222-2222-2222-222222222222';
+                
+                const role = email === 'admin@vitatech.com' ? 'super_admin' : 'client_owner';
+                const nome = email === 'admin@vitatech.com' ? 'Admin VitaTech' : 'Carlos Empresário';
+
+                await supabase.from('usuarios').upsert({
+                  id: authUser.user.id,
+                  email: authUser.user.email,
+                  nome,
+                  empresa_id: empresaId,
+                  role
+                });
+              }
+            } catch (err) {
+              console.error('Error creating user profile:', err);
+            }
+          }, 1000);
+        }
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Demo user creation error:', error);
+      return false;
     }
   };
 
@@ -168,28 +206,23 @@ export default function Auth() {
             {/* Demo Quick Login */}
             <div className="border-t pt-4 space-y-2">
               <p className="text-sm text-muted-foreground text-center">
-                Login rápido para demo:
+                Contas de demonstração:
               </p>
-              <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => handleQuickLogin('admin@vitatech.com')}
-                  disabled={loading}
-                >
-                  Entrar como Admin
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => handleQuickLogin('carlos@empresa.com')}
-                  disabled={loading}
-                >
-                  Entrar como Cliente
-                </Button>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div className="bg-muted p-3 rounded-lg space-y-1">
+                  <p className="font-medium">Admin VitaTech:</p>
+                  <p>Email: admin@vitatech.com</p>
+                  <p>Senha: demo123</p>
+                </div>
+                <div className="bg-muted p-3 rounded-lg space-y-1">
+                  <p className="font-medium">Cliente Demo:</p>
+                  <p>Email: carlos@empresa.com</p>
+                  <p>Senha: demo123</p>
+                </div>
               </div>
+              <p className="text-xs text-center text-muted-foreground">
+                Primeiro faça o cadastro com estes emails e senha para usar a demo
+              </p>
             </div>
           </CardContent>
         </Card>
