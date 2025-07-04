@@ -11,7 +11,7 @@ const Index = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.role === 'admin') {
+      if (user.role === 'super_admin') {
         navigate('/admin');
       } else {
         navigate('/client');
@@ -19,7 +19,7 @@ const Index = () => {
     }
   }, [isAuthenticated, user, navigate]);
 
-  const handleLogin = (role: 'admin' | 'client') => {
+  const handleLogin = (role: 'super_admin' | 'client_owner') => {
     login(role);
   };
 
@@ -41,7 +41,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => handleLogin('admin')}
+                onClick={() => handleLogin('super_admin')}
                 className="w-full"
                 size="lg"
               >
@@ -59,7 +59,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => handleLogin('client')}
+                onClick={() => handleLogin('client_owner')}
                 className="w-full"
                 variant="outline"
                 size="lg"

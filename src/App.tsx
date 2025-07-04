@@ -8,14 +8,14 @@ import NotFound from "./pages/NotFound";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminClients from "./pages/admin/AdminClients";
-import AdminMetrics from "./pages/admin/AdminMetrics";
+import AdminClientes from "./pages/admin/AdminClientes";
+import AdminMetricas from "./pages/admin/AdminMetricas";
 import AdminSettings from "./pages/admin/AdminSettings";
 
 // Client Pages
-import ClientDashboard from "./pages/client/ClientDashboard";
-import ClientSupport from "./pages/client/ClientSupport";
-import ClientContent from "./pages/client/ClientContent";
+import ClientCaptacao from "./pages/client/ClientCaptacao";
+import ClientAtendimento from "./pages/client/ClientAtendimento";
+import ClientConteudo from "./pages/client/ClientConteudo";
 import ClientSettings from "./pages/client/ClientSettings";
 
 const queryClient = new QueryClient();
@@ -31,15 +31,15 @@ const App = () => (
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/clients" element={<AdminClients />} />
-          <Route path="/admin/metrics" element={<AdminMetrics />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/clientes" element={<AdminClientes />} />
+          <Route path="/admin/metricas" element={<AdminMetricas />} />
+          <Route path="/admin/configuracoes" element={<AdminSettings />} />
           
           {/* Client Routes */}
-          <Route path="/client" element={<ClientDashboard />} />
-          <Route path="/client/support" element={<ClientSupport />} />
-          <Route path="/client/content" element={<ClientContent />} />
-          <Route path="/client/settings" element={<ClientSettings />} />
+          <Route path="/client" element={<ClientCaptacao />} />
+          <Route path="/client/atendimento" element={<ClientAtendimento />} />
+          <Route path="/client/conteudo" element={<ClientConteudo />} />
+          <Route path="/client/configuracoes" element={<ClientSettings />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

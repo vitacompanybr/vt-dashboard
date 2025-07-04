@@ -33,10 +33,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex flex-1 items-center justify-between">
               <div>
                 <h1 className="text-xl font-semibold text-foreground">
-                  {user?.role === 'admin' ? 'Painel Administrativo' : 'Painel do Cliente'}
+                  {user?.role === 'super_admin' ? 'Painel Administrativo' : 'Painel do Cliente'}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Bem-vindo, {user?.name}
+                  Bem-vindo, {user?.nome} • {user?.empresa.nome}
                 </p>
               </div>
               <Button

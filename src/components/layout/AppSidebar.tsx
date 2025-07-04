@@ -17,16 +17,16 @@ import { useAuthStore } from "@/store/auth";
 
 const adminItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Clientes", url: "/admin/clients", icon: Users },
-  { title: "Métricas", url: "/admin/metrics", icon: Activity },
-  { title: "Configurações", url: "/admin/settings", icon: Settings },
+  { title: "Clientes", url: "/admin/clientes", icon: Users },
+  { title: "Métricas", url: "/admin/metricas", icon: Activity },
+  { title: "Configurações", url: "/admin/configuracoes", icon: Settings },
 ];
 
 const clientItems = [
   { title: "Captação", url: "/client", icon: UserPlus },
-  { title: "Atendimento", url: "/client/support", icon: MessageSquare },
-  { title: "Conteúdo", url: "/client/content", icon: FileText },
-  { title: "Configurações", url: "/client/settings", icon: Settings },
+  { title: "Atendimento", url: "/client/atendimento", icon: MessageSquare },
+  { title: "Conteúdo", url: "/client/conteudo", icon: FileText },
+  { title: "Configurações", url: "/client/configuracoes", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -35,7 +35,7 @@ export function AppSidebar() {
   const { user, logout } = useAuthStore();
   const currentPath = location.pathname;
 
-  const items = user?.role === 'admin' ? adminItems : clientItems;
+  const items = user?.role === 'super_admin' ? adminItems : clientItems;
   const isActive = (path: string) => currentPath === path;
   const isCollapsed = state === "collapsed";
 
@@ -51,7 +51,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-foreground/70 text-xs uppercase tracking-wider">
-            {user?.role === 'admin' ? 'Administração' : 'Cliente'}
+            {user?.role === 'super_admin' ? 'Administração' : 'Cliente'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

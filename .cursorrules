@@ -1,0 +1,83 @@
+# Dashboard VitaTech - Knowledge Base
+
+## Contexto do Projeto
+Este é um dashboard SaaS para agências de automação e IA gerenciarem seus clientes. O produto tem DUAS VIEWS distintas com públicos e necessidades diferentes.
+
+## Arquitetura Principal
+DUAS VIEWS OBRIGATÓRIAS:
+
+### 1. VIEW ADMIN (/admin/* routes)
+- **Público:** Dono da agência VitaTech (técnico, orientado a dados)
+- **Design:** Funcional, densidade alta, tema ESCURO obrigatório
+- **Layout:** Sidebar compacta, tabelas densas, ações inline rápidas
+- **Componentes:** DataTables, KPI cards pequenos, filtros avançados
+- **Objetivo:** Eficiência operacional máxima
+
+### 2. VIEW CLIENTE (/client/* routes) 
+- **Público:** Empresários clientes (não-técnicos, pouco tempo)
+- **Design:** Intuitivo, limpo, mobile-first, TEMA CLARO
+- **Layout:** Cards grandes, gráficos visuais, botões evidentes
+- **Componentes:** KPI cards coloridos, charts, tooltips explicativos
+- **Objetivo:** Simplicidade e clareza visual
+
+## Estrutura de Rotas
+/admin/dashboard - Visão geral agência
+/admin/clientes - Gestão de todos clientes
+/admin/metricas - Analytics agregado
+/admin/configuracoes - Settings globais
+/client/captacao - Métricas de leads
+/client/atendimento - Gestão chatbots
+/client/conteudo - Pipeline de posts
+/client/configuracoes - Config da empresa
+
+## Stack Técnica
+- React 18+ + TypeScript (strict mode)
+- Tailwind CSS + shadcn/ui
+- Zustand para state management
+- Supabase (auth + database + storage)
+- Recharts para gráficos
+- React Hook Form + Zod
+
+## Padrões de Código
+- Nomeação em português para variáveis de negócio (leads, conteudos, empresas)
+- Comentários em português
+- Componentes funcionais com hooks sempre
+- Loading states obrigatórios em TUDO
+- Error boundaries em rotas principais
+- Mobile-first para view cliente, desktop-first para admin
+
+## Schema Supabase Base
+```sql
+empresas (id, nome, plano, created_at)
+usuarios (id, email, empresa_id, role, nome)
+leads (id, empresa_id, nome, telefone, canal, status)
+conteudos (id, empresa_id, titulo, tipo, status, arquivos)
+```
+
+## Roles de Usuário
+- super_admin: Acesso total view admin
+- client_owner: Dono da empresa cliente
+- client_admin: Admin da empresa cliente
+- client_viewer: Usuário básico cliente
+
+## UI Guidelines
+
+### View Admin:
+- Cores: Slate/Gray palette, fundo escuro
+- Densidade: Máxima (muitos dados visíveis)
+- Navegação: Sidebar colapsável
+- Ações: Inline, tooltips técnicos
+
+### View Cliente:
+- Cores: Brand colors vibrantes (blue/green)
+- Densidade: Baixa (espaçamento generoso)
+- Navegação: Bottom nav mobile + sidebar desktop
+- Ações: Botões grandes, confirmações visuais
+
+## Funcionalidades Core
+- Captação: KPIs de leads, funil conversão, gestão pipeline
+- Atendimento: Editor prompts chatbot, métricas WhatsApp
+- Conteúdo: Kanban posts, upload arquivos, aprovação workflow
+- Config: Gestão usuários, integrações, billing
+
+SEMPRE pergunte: "Isso é para view admin ou cliente?" antes de criar qualquer componente.
