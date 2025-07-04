@@ -41,6 +41,11 @@ export default function Auth() {
           title: 'Login realizado com sucesso!',
           description: 'Redirecionando...',
         });
+        
+        // Force redirect after successful login
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
         // Check if it's a demo user
         const isDemoUser = email === 'admin@vitatech.com' || email === 'carlos@empresa.com';
